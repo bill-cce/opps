@@ -1,4 +1,14 @@
 // ─────────────────────────────────────────────
+//  GAME DATA — populated from JSON files
+// ─────────────────────────────────────────────
+
+let JOBS = [];
+let ENEMIES = [];
+let STORE_ITEMS = [];
+let PROPERTIES = [];
+let RANK_NAMES = [];
+
+// ─────────────────────────────────────────────
 //  MAIN — INIT
 // ─────────────────────────────────────────────
 
@@ -54,11 +64,40 @@ function tickEnergyRegen() {
 }
 
 // ─────────────────────────────────────────────
+//  LOAD JSON DATA FROM CDN
+// ─────────────────────────────────────────────
+
+async function loadGameData() {
+  try {
+    const [jobs, enemies, store, properties, ranks] = await Promise.all([
+      fetch('data/jobs.json').then(r => r.json()),
+      fetch('data/enemies.json').then(r => r.json()),
+      fetch('data/store.json').then(r => r.json()),
+      fetch('data/properties.json').then(r => r.json()),
+      fetch('data/ranks.json').then(r => r.json())
+    ]);
+
+    JOBS        = jobs;
+    ENEMIES     = enemies;
+    STORE_ITEMS = store;
+    PROPERTIES  = properties;
+    RANK_NAMES  = ranks;
+
+  } catch (err) {
+    console.error('Failed to load game data:', err);
+    // TODO: show a user-facing error message
+  }
+}
+
+// ─────────────────────────────────────────────
 //  BOOT
 // ─────────────────────────────────────────────
 
 async function init() {
-  // Load saved state if available
+  // Load all JSON data first — everything depends on this
+  await loadGameData();
+
+  // Load saved player state if available
   const saved = await GameState.load();
   if (saved) {
     GameState.apply(saved);
