@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPPS — Street Empire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">OPP<span>S</span></div>
+  <div class="hud">
+    <div class="hud-stat level">
+      <span>RANK</span>
+      <strong id="h-level">1</strong>
+    </div>
+    <div class="hud-stat money">
+      <span>BREAD</span>
+      <strong id="h-money">$500</strong>
+    </div>
+    <div class="hud-stat rep">
+      <span>REP</span>
+      <strong id="h-rep">0</strong>
+    </div>
+    <div class="hud-stat">
+      <span>ENERGY</span>
+      <strong id="h-energy">10/10</strong>
+    </div>
+    <div class="hud-stat">
+      <span>HEALTH</span>
+      <strong id="h-health">100/100</strong>
+    </div>
+  </div>
+</header>
+
+<div class="wrapper">
+  <!-- SIDEBAR NAV -->
+  <nav>
+    <div class="nav-section">Hustle</div>
+    <div class="nav-item active" onclick="showTab('hood')" id="nav-hood">
+      <span class="nav-icon">🏚️</span> THE HOOD
+    </div>
+    <div class="nav-item" onclick="showTab('jobs')" id="nav-jobs">
+      <span class="nav-icon">💼</span> MOVES
+    </div>
+    <div class="nav-section">Beef</div>
+    <div class="nav-item" onclick="showTab('fight')" id="nav-fight">
+      <span class="nav-icon">⚔️</span> OPPS LIST
+    </div>
+    <div class="nav-section">Empire</div>
+    <div class="nav-item" onclick="showTab('store')" id="nav-store">
+      <span class="nav-icon">🔫</span> PLUG
+    </div>
+    <div class="nav-item" onclick="showTab('props')" id="nav-props">
+      <span class="nav-icon">🏢</span> SPOTS
+    </div>
+    <div class="nav-item" onclick="showTab('stats')" id="nav-stats">
+      <span class="nav-icon">📊</span> STATS
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- FEED -->
+    <div id="feed">
+      <div class="feed-line info">» Welcome to OPPS. Build your empire.</div>
+    </div>
+
+    <!-- HOOD TAB -->
+    <div class="tab active" id="tab-hood">
+      <div class="card">
+        <div class="card-title">⚡ YOUR STATUS</div>
+        <div class="xp-wrap">
+          <div class="xp-label"><span>XP</span><span id="xp-label">0 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill" id="xp-bar" style="width:0%"></div></div>
+        </div>
+        <div class="xp-wrap">
+          <div class="xp-label"><span>ENERGY</span><span id="energy-label">10 / 10</span></div>
+          <div class="bar-track"><div class="bar-fill energy" id="energy-bar" style="width:100%"></div></div>
+        </div>
+        <div class="xp-wrap">
+          <div class="xp-label"><span>HEALTH</span><span id="health-label">100 / 100</span></div>
+          <div class="bar-track"><div class="bar-fill health" id="health-bar" style="width:100%"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏚️ HOOD ACTIVITIES</div>
+        <div class="job-grid">
+          <div class="job-card" onclick="doActivity('collect')">
+            <div class="job-name">Collect From Spots</div>
+            <div class="job-meta">
+              <span>💰 <span class="val" id="collect-income">$0</span></span>
+              <span>⚡ <span class="val">0</span></span>
+            </div>
+            <div class="do-job-btn" style="text-align:center;background:#1c1c1c;border:1px solid var(--gold);color:var(--gold);padding:6px;border-radius:2px;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1rem;">COLLECT</div>
+          </div>
+          <div class="job-card" onclick="doActivity('rest')">
+            <div class="job-name">Rest Up (Heal)</div>
+            <div class="job-meta">
+              <span>❤️ <span class="val">+25 HP</span></span>
+              <span>⚡ <span class="val">1</span></span>
+            </div>
+            <div class="do-job-btn" style="text-align:center;background:#1c1c1c;border:1px solid var(--green);color:var(--green);padding:6px;border-radius:2px;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1rem;">REST</div>
+          </div>
+          <div class="job-card" onclick="doActivity('launder')">
+            <div class="job-name">Launder Money</div>
+            <div class="job-meta">
+              <span>📈 <span class="val">+10% Cash</span></span>
+              <span>⚡ <span class="val">2</span></span>
+            </div>
+            <div class="do-job-btn" style="text-align:center;background:#1c1c1c;border:1px solid #00b8ff;color:#00b8ff;padding:6px;border-radius:2px;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1rem;">LAUNDER</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOBS TAB -->
+    <div class="tab" id="tab-jobs">
+      <div class="card">
+        <div class="card-title">💼 MOVES — EARN YOUR BREAD</div>
+        <div class="job-grid" id="job-list"></div>
+      </div>
+    </div>
+
+    <!-- FIGHT TAB -->
+    <div class="tab" id="tab-fight">
+      <div class="card">
+        <div class="card-title">⚔️ OPPS LIST</div>
+        <div class="enemy-list" id="enemy-list"></div>
+      </div>
+    </div>
+
+    <!-- STORE TAB -->
+    <div class="tab" id="tab-store">
+      <div class="card">
+        <div class="card-title">🔫 THE PLUG — GEAR UP</div>
+        <div class="store-grid" id="store-list"></div>
+      </div>
+    </div>
+
+    <!-- PROPS TAB -->
+    <div class="tab" id="tab-props">
+      <div class="card">
+        <div class="card-title">🏢 SPOTS — PASSIVE INCOME</div>
+        <div class="prop-grid" id="prop-list"></div>
+      </div>
+    </div>
+
+    <!-- STATS TAB -->
+    <div class="tab" id="tab-stats">
+      <div class="card">
+        <div class="card-title">📊 YOUR STATS</div>
+        <div class="stat-grid" id="stat-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎒 INVENTORY</div>
+        <div id="inventory-list" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- COMBAT OVERLAY -->
+<div class="overlay" id="combat-overlay">
+  <div class="combat-box">
+    <div class="combat-title">GETTIN ACTIVE</div>
+    <div class="vs-row">
+      <div class="fighter">
+        <div class="fighter-icon">🤜</div>
+        <div class="fighter-name" id="c-player">YOU</div>
+        <div class="hp-bar"><div class="hp-fill" id="c-player-hp" style="width:100%"></div></div>
+      </div>
+      <div class="vs-text">VS</div>
+      <div class="fighter">
+        <div class="fighter-icon" id="c-enemy-icon">😤</div>
+        <div class="fighter-name" id="c-enemy-name">OPP</div>
+        <div class="hp-bar"><div class="hp-fill enemy-hp" id="c-enemy-hp" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div class="combat-log" id="combat-log"></div>
+    <div class="combat-result" id="combat-result"></div>
+    <button class="close-combat" id="close-combat" onclick="closeCombat()" style="display:none">CLOSE</button>
+  </div>
+</div>
+
+<!-- LEVEL UP BANNER -->
+<div class="levelup-banner" id="levelup-banner">
+  <div class="levelup-text">🔥 RANKED UP! 🔥</div>
+  <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="levelup-sub">You are now Rank 2</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SCRIPTS — order matters -->
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/hud.js"></script>
+<script src="js/jobs.js"></script>
+<script src="js/combat.js"></script>
+<script src="js/store.js"></script>
+<script src="js/properties.js"></script>
+<script src="js/hood.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/crew.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>

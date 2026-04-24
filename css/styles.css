@@ -1,0 +1,451 @@
+:root {
+  --bg: #0a0a0a;
+  --panel: #111111;
+  --border: #222;
+  --accent: #ff3a00;
+  --gold: #f5c400;
+  --green: #00e676;
+  --red: #ff1744;
+  --text: #e8e8e8;
+  --muted: #666;
+  --hp-color: #00e676;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  min-height: 100vh;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.01) 2px,
+    rgba(255,255,255,0.01) 4px
+  );
+}
+
+/* ── HEADER ── */
+header {
+  background: #0d0d0d;
+  border-bottom: 2px solid var(--accent);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 6px;
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(255,58,0,0.5);
+}
+.logo span { color: var(--gold); }
+
+.hud {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.hud-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.hud-stat strong {
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+.hud-stat.money strong { color: var(--gold); }
+.hud-stat.rep strong { color: var(--accent); }
+.hud-stat.level strong { color: #00b8ff; }
+
+/* ── LAYOUT ── */
+.wrapper {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  min-height: calc(100vh - 58px);
+}
+
+/* ── SIDEBAR NAV ── */
+nav {
+  background: #0c0c0c;
+  border-right: 1px solid var(--border);
+  padding: 16px 0;
+}
+.nav-section {
+  padding: 6px 14px 2px;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+.nav-item:hover { background: rgba(255,58,0,0.07); color: var(--accent); }
+.nav-item.active {
+  border-left-color: var(--accent);
+  background: rgba(255,58,0,0.1);
+  color: var(--accent);
+}
+.nav-icon { font-size: 17px; width: 22px; text-align: center; }
+
+/* ── MAIN CONTENT ── */
+main { padding: 20px; overflow-y: auto; }
+
+.tab { display: none; }
+.tab.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+/* ── XP BAR ── */
+.xp-wrap { margin-bottom: 16px; }
+.xp-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.bar-track { background: #1a1a1a; border-radius: 2px; height: 6px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #00b8ff, #0066ff); transition: width 0.4s; }
+.bar-fill.energy { background: linear-gradient(90deg, #f5c400, #ff6d00); }
+.bar-fill.health { background: linear-gradient(90deg, #00e676, #00b248); }
+
+/* ── JOB GRID ── */
+.job-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.job-card {
+  background: #161616;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.job-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent);
+}
+.job-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.job-card.locked { opacity: 0.4; cursor: not-allowed; }
+.job-card.locked::before { background: var(--muted); }
+.job-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 6px; }
+.job-meta { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.job-meta span { display: flex; align-items: center; gap: 4px; }
+.job-meta .val { color: var(--text); font-weight: 600; }
+.job-progress-wrap { margin-top: 8px; }
+.job-progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+.job-bar { height: 4px; background: #222; border-radius: 2px; overflow: hidden; }
+.job-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s; }
+.do-job-btn {
+  margin-top: 10px;
+  width: 100%;
+  background: var(--accent);
+  border: none;
+  color: white;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  padding: 7px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.do-job-btn:hover { opacity: 0.85; }
+.do-job-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
+
+/* ── FIGHT / HOOD ── */
+.enemy-list { display: flex; flex-direction: column; gap: 10px; }
+.enemy-card {
+  background: #161616;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.enemy-avatar {
+  width: 48px; height: 48px;
+  border-radius: 4px;
+  background: #1e1e1e;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.enemy-info { flex: 1; }
+.enemy-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; }
+.enemy-stats { display: flex; gap: 12px; font-size: 12px; color: var(--muted); margin-top: 3px; }
+.enemy-stats .val { color: var(--text); }
+.attack-btn {
+  background: var(--red);
+  border: none;
+  color: white;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  padding: 8px 18px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.attack-btn:hover { opacity: 0.85; }
+
+/* ── STORE ── */
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.store-item {
+  background: #161616;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+  text-align: center;
+}
+.item-icon { font-size: 36px; margin-bottom: 8px; }
+.item-name { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; margin-bottom: 4px; }
+.item-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.4; }
+.item-price { color: var(--gold); font-family: 'Space Mono', monospace; font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+.buy-btn {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+  padding: 7px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.buy-btn:hover { background: var(--gold); color: #000; }
+.buy-btn:disabled { border-color: var(--muted); color: var(--muted); cursor: not-allowed; background: transparent; }
+
+/* ── PROPERTIES ── */
+.prop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.prop-card {
+  background: #161616;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+  text-align: center;
+}
+.prop-icon { font-size: 40px; margin-bottom: 8px; }
+.prop-name { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; }
+.prop-income { color: var(--green); font-size: 13px; margin: 4px 0 6px; font-family: 'Space Mono', monospace; }
+.prop-owned { color: var(--gold); font-size: 13px; margin-bottom: 10px; }
+.prop-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  padding: 7px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.prop-btn:hover { background: var(--green); color: #000; }
+.prop-btn:disabled { border-color: var(--muted); color: var(--muted); cursor: not-allowed; }
+
+/* ── FEED / LOG ── */
+#feed {
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px;
+  background: #0d0d0d;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  margin-bottom: 16px;
+}
+.feed-line { padding: 2px 0; border-bottom: 1px solid #161616; color: var(--muted); }
+.feed-line.win { color: var(--green); }
+.feed-line.loss { color: var(--red); }
+.feed-line.info { color: #00b8ff; }
+.feed-line.gold { color: var(--gold); }
+
+/* ── COMBAT MODAL ── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.overlay.open { display: flex; }
+.combat-box {
+  background: #111;
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  padding: 24px;
+  width: 360px;
+  text-align: center;
+}
+.combat-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.vs-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.fighter { text-align: center; }
+.fighter-icon { font-size: 40px; margin-bottom: 6px; }
+.fighter-name { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; font-size: 1rem; }
+.hp-bar { width: 100px; height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin: 6px auto 0; }
+.hp-fill { height: 100%; background: var(--green); border-radius: 4px; transition: width 0.3s; }
+.hp-fill.enemy-hp { background: var(--red); }
+.vs-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--muted); }
+.combat-log {
+  background: #0d0d0d;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px;
+  height: 100px;
+  overflow-y: auto;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  text-align: left;
+  margin-bottom: 16px;
+}
+.combat-result {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+}
+.close-combat {
+  background: var(--accent);
+  border: none;
+  color: white;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  padding: 10px 30px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+/* ── STATS TAB ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.stat-row {
+  background: #161616;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.stat-row .label { color: var(--muted); font-size: 13px; }
+.stat-row .val { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 14px; color: var(--text); }
+
+/* ── LEVEL UP BANNER ── */
+.levelup-banner {
+  display: none;
+  position: fixed;
+  top: 70px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #1a0f00, #2a1500);
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+  padding: 14px 28px;
+  z-index: 300;
+  text-align: center;
+  animation: slideDown 0.4s ease;
+}
+.levelup-banner.show { display: block; }
+@keyframes slideDown { from { opacity: 0; top: 50px; } to { opacity: 1; top: 70px; } }
+.levelup-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 5px;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(245,196,0,0.5);
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  background: #1a1a1a;
+  border-left: 3px solid var(--green);
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-size: 13px;
+  z-index: 400;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(0); }
+.toast.bad { border-left-color: var(--red); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
