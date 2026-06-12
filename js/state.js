@@ -12,6 +12,12 @@ const G = {
   inventory: [],
   properties: {},
   jobProgress: {},
+  playerId: null,
+  lastSeen: 0,
+  lastEnergyTick: 0,
+  crewMemberCount: 0,
+  recruitedBy: null,
+  gems: 0,
 };
 
 // ─────────────────────────────────────────────
@@ -22,39 +28,31 @@ const G = {
 
 const GameState = {
   async save() {
-    // TODO: replace with JestSDK.savePlayerData(G)
-    try {
-      localStorage.setItem('opps_gamestate', JSON.stringify(G));
-    } catch(e) {
-      console.warn('GameState.save failed:', e);
+    if (typeof JestSDK !== 'undefined') {
+      await JestSDK.data.set('g', G);
+    } else {
+      try { localStorage.setItem('opps_gamestate', JSON.stringify(G)); } catch(e) {
+        console.warn('GameState.save failed:', e);
+      }
     }
   },
 
   async load() {
-    // TODO: replace with JestSDK.getPlayerData()
-    try {
-      const saved = localStorage.getItem('opps_gamestate');
-      if (!saved) return null;
-      return JSON.parse(saved);
-    } catch(e) {
-      console.warn('GameState.load failed:', e);
-      return null;
+    if (typeof JestSDK !== 'undefined') {
+      const data = await JestSDK.data.getAll();
+      return data.g ?? null;
+    } else {
+      try {
+        const saved = localStorage.getItem('opps_gamestate');
+        return saved ? JSON.parse(saved) : null;
+      } catch(e) {
+        console.warn('GameState.load failed:', e);
+        return null;
+      }
     }
   },
 
-  async getHardCurrencyBalance() {
-    // TODO: replace with JestSDK.wallet.getBalance()
-    return 1000; // mocked
-  },
-
-  async debitHardCurrency(amount) {
-    // TODO: replace with JestSDK.wallet.debit(amount)
-    console.log(`Mock hard currency debit: ${amount} credits`);
-    return true;
-  },
-
   apply(saved) {
-    // Merge saved data into G, preserving any new keys added since last save
     Object.assign(G, saved);
   }
 };

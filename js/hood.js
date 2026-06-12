@@ -32,4 +32,5 @@ function doActivity(type) {
     updateHUD();
   }
   GameState.save();
+  Notify.energyFull(); // no-op if energy is full or collect was the action
 }

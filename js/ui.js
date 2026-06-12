@@ -10,6 +10,7 @@ function showTab(name) {
   $('tab-' + name).classList.add('active');
   $('nav-' + name).classList.add('active');
   if (name === 'stats') renderStats();
+  if (name === 'crew') renderCrew();
 }
 
 function log(msg, cls = '') {

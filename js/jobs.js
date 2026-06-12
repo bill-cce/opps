@@ -51,4 +51,5 @@ function doJob(jobId) {
   updateHUD();
   renderJobs();
   GameState.save();
+  Notify.energyFull();
 }

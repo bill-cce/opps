@@ -33,6 +33,10 @@
       <span>HEALTH</span>
       <strong id="h-health">100/100</strong>
     </div>
+    <div class="hud-stat gems">
+      <span>GEMS</span>
+      <strong id="h-gems">💎 0</strong>
+    </div>
   </div>
 </header>
 
@@ -59,6 +63,9 @@
     </div>
     <div class="nav-item" onclick="showTab('stats')" id="nav-stats">
       <span class="nav-icon">📊</span> STATS
+    </div>
+    <div class="nav-item" onclick="showTab('crew')" id="nav-crew">
+      <span class="nav-icon">👥</span> CREW
     </div>
   </nav>
 
@@ -141,6 +148,7 @@
         <div class="card-title">🔫 THE PLUG — GEAR UP</div>
         <div class="store-grid" id="store-list"></div>
       </div>
+      <div id="gem-section"></div>
     </div>
 
     <!-- PROPS TAB -->
@@ -150,6 +158,9 @@
         <div class="prop-grid" id="prop-list"></div>
       </div>
     </div>
+
+    <!-- CREW TAB -->
+    <div class="tab" id="tab-crew"></div>
 
     <!-- STATS TAB -->
     <div class="tab" id="tab-stats">
@@ -199,6 +210,7 @@
 <div class="toast" id="toast"></div>
 
 <!-- SCRIPTS — order matters -->
+<script src="https://cdn.jest.com/sdk/latest/jestsdk.js"></script>
 <script src="js/state.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/hud.js"></script>
@@ -209,6 +221,8 @@
 <script src="js/hood.js"></script>
 <script src="js/stats.js"></script>
 <script src="js/crew.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/payments.js"></script>
 <script src="js/main.js"></script>
 
 </body>

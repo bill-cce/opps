@@ -5,6 +5,7 @@
 function renderStore() {
   const container = $('store-list');
   container.innerHTML = '';
+  renderGemSection();
   STORE_ITEMS.forEach(item => {
     const owned = G.inventory.includes(item.id);
     const canAfford = G.money >= item.price;
