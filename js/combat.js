@@ -64,10 +64,13 @@ function runCombat(enemyData) {
   let round = 1;
   const maxPHp = G.health;
   const maxEHp = enemyData.hp;
+  const crewBonus = Crew.getBonus();
+  const effectiveAtk = G.attack + crewBonus.attack;
+  const effectiveDef = G.defense + crewBonus.defense;
 
   const interval = setInterval(() => {
     // Player attacks
-    const playerDmg = Math.max(1, rand(G.attack, G.attack + 10) - enemyData.def);
+    const playerDmg = Math.max(1, rand(effectiveAtk, effectiveAtk + 10) - enemyData.def);
     enemyHp -= playerDmg;
     combatLog(`Round ${round}: You hit ${enemyData.name} for ${playerDmg} dmg`, '#00e676');
     $('c-enemy-hp').style.width = Math.max(0, (enemyHp / maxEHp) * 100) + '%';
@@ -89,7 +92,7 @@ function runCombat(enemyData) {
     }
 
     // Enemy attacks
-    const enemyDmg = Math.max(1, rand(enemyData.atk, enemyData.atk + 5) - G.defense);
+    const enemyDmg = Math.max(1, rand(enemyData.atk, enemyData.atk + 5) - effectiveDef);
     playerHp -= enemyDmg;
     combatLog(`Round ${round}: ${enemyData.name} hits you for ${enemyDmg} dmg`, '#ff5252');
     $('c-player-hp').style.width = Math.max(0, (playerHp / maxPHp) * 100) + '%';

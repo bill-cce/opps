@@ -34,4 +34,5 @@ function buyProp(propId) {
   updateHUD();
   renderProps();
   GameState.save();
+  Notify.incomeReady();
 }

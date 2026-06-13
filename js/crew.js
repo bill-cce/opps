@@ -1,31 +1,114 @@
 // ─────────────────────────────────────────────
 //  CREW
-//  Stub — to be implemented
 // ─────────────────────────────────────────────
 
-// Crew mechanics will handle:
-// - Inviting friends via RCS/SMS link
-// - Tracking crew members (by phone number via Jest SDK)
-// - Crew bonuses to attack/defense
-// - Attribution tracking for Jest's 20% referral revenue share
-
 const Crew = {
-  getInviteLink() {
-    // TODO: generate a trackable invite link via Jest SDK
-    // that attributes any new user to this player
-    return `https://jest.com/opps?ref=${G.phone || 'demo'}`;
+  _memberCount: 0,
+
+  async init() {
+    if (typeof JestSDK !== 'undefined') {
+      // If opened via a crew invite link, record the recruiter
+      const payload = JestSDK.getEntryPayload();
+      if (payload.invitedBy && !G.recruitedBy) {
+        G.recruitedBy = payload.invitedBy;
+        GameState.save();
+      }
+      await this.refresh();
+    } else {
+      // Local dev: restore cached count from saved state
+      this._memberCount = G.crewMemberCount || 0;
+    }
   },
 
-  getMembers() {
-    // TODO: fetch crew members from Jest SDK
-    return G.crew || [];
+  async refresh() {
+    if (typeof JestSDK === 'undefined') return;
+    try {
+      const result = await JestSDK.referrals.listReferrals({ reference: 'crew_invite_v1' });
+      this._memberCount = result.referrals?.length ?? 0;
+      G.crewMemberCount = this._memberCount;
+      GameState.save();
+    } catch (e) {
+      console.warn('Crew.refresh failed:', e);
+      this._memberCount = G.crewMemberCount || 0;
+    }
+  },
+
+  async invite() {
+    if (typeof JestSDK === 'undefined') {
+      toast('Crew invites require the Jest platform.', true);
+      return;
+    }
+    await JestSDK.referrals.shareReferralLink({
+      reference: 'crew_invite_v1',
+      entryPayload: { invitedBy: G.playerId },
+      shareTitle: 'Join my crew in OPPS',
+      shareText: 'My crew needs soldiers. Stack bread, slide on opps. You in?',
+    });
   },
 
   getBonus() {
-    const members = this.getMembers().length;
     return {
-      attack: members * 2,
-      defense: members * 1
+      attack: this._memberCount * 2,
+      defense: this._memberCount * 1,
     };
-  }
+  },
+
+  getCount() {
+    return this._memberCount;
+  },
 };
+
+function renderCrew() {
+  const count = Crew.getCount();
+  const bonus = Crew.getBonus();
+
+  $('tab-crew').innerHTML = `
+    <div class="card">
+      <div class="card-title">👥 YOUR CREW</div>
+      <div class="crew-stats">
+        <div class="crew-stat">
+          <div class="crew-stat-val">${count}</div>
+          <div class="crew-stat-label">SOLDIERS</div>
+        </div>
+        <div class="crew-stat">
+          <div class="crew-stat-val" style="color:var(--accent)">+${bonus.attack}</div>
+          <div class="crew-stat-label">CREW ATK</div>
+        </div>
+        <div class="crew-stat">
+          <div class="crew-stat-val" style="color:#00b8ff">+${bonus.defense}</div>
+          <div class="crew-stat-label">CREW DEF</div>
+        </div>
+      </div>
+      ${count === 0
+        ? `<p class="crew-empty">No soldiers yet. Send the link, build the team.</p>`
+        : `<p class="crew-active">Your ${count} soldier${count > 1 ? 's' : ''} boost your stats in every fight.</p>`
+      }
+      <button class="attack-btn crew-invite-btn" onclick="Crew.invite()">📲 SEND THE LINK</button>
+      <button class="crew-refresh-btn" onclick="crewRefresh()">REFRESH CREW</button>
+    </div>
+
+    ${G.recruitedBy ? `
+    <div class="card">
+      <div class="card-title">🤝 RECRUITED</div>
+      <p style="color:var(--muted);font-size:13px;">A soldier put you on. Ride for the crew.</p>
+    </div>
+    ` : ''}
+
+    <div class="card">
+      <div class="card-title">💡 HOW IT WORKS</div>
+      <div class="crew-rules">
+        <div>+2 ATK per crew member</div>
+        <div>+1 DEF per crew member</div>
+        <div>Bonuses apply to every fight</div>
+      </div>
+    </div>
+  `;
+}
+
+async function crewRefresh() {
+  toast('Checking crew...');
+  await Crew.refresh();
+  renderCrew();
+  const count = Crew.getCount();
+  toast(count > 0 ? `Crew: ${count} soldier${count > 1 ? 's' : ''}` : 'No crew members yet.');
+}

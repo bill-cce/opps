@@ -39,9 +39,8 @@ function addXP(amt) {
 const ENERGY_REGEN_SECONDS = 60; // 1 energy per 60 seconds
 
 function applyOfflineEnergyRegen() {
-  const lastSeen = parseInt(localStorage.getItem('opps_lastSeen') || Date.now());
-  const now = Date.now();
-  const secondsElapsed = Math.floor((now - lastSeen) / 1000);
+  const lastSeen = G.lastSeen || Date.now();
+  const secondsElapsed = Math.floor((Date.now() - lastSeen) / 1000);
   const energyToAdd = Math.floor(secondsElapsed / ENERGY_REGEN_SECONDS);
   if (energyToAdd > 0) {
     G.energy = Math.min(G.maxEnergy, G.energy + energyToAdd);
@@ -49,14 +48,13 @@ function applyOfflineEnergyRegen() {
 }
 
 function tickEnergyRegen() {
-  localStorage.setItem('opps_lastSeen', Date.now());
+  G.lastSeen = Date.now();
   if (G.energy < G.maxEnergy) {
-    // Check if a full regen interval has passed since last tick
-    const lastTick = parseInt(localStorage.getItem('opps_lastEnergyTick') || Date.now());
+    const lastTick = G.lastEnergyTick || Date.now();
     const secondsElapsed = Math.floor((Date.now() - lastTick) / 1000);
     if (secondsElapsed >= ENERGY_REGEN_SECONDS) {
       G.energy = Math.min(G.maxEnergy, G.energy + 1);
-      localStorage.setItem('opps_lastEnergyTick', Date.now());
+      G.lastEnergyTick = Date.now();
       updateHUD();
       GameState.save();
     }
@@ -68,13 +66,21 @@ function tickEnergyRegen() {
 // ─────────────────────────────────────────────
 
 async function loadGameData() {
+  const setProgress = typeof JestSDK !== 'undefined' ? p => JestSDK.setLoadingProgress(p) : () => {};
+  let done = 0;
+  const track = async (promise) => {
+    const result = await promise;
+    setProgress(Math.round((++done / 5) * 80)); // files cover 0→80%
+    return result;
+  };
+
   try {
     const [jobs, enemies, store, properties, ranks] = await Promise.all([
-      fetch('data/jobs.json').then(r => r.json()),
-      fetch('data/enemies.json').then(r => r.json()),
-      fetch('data/store.json').then(r => r.json()),
-      fetch('data/properties.json').then(r => r.json()),
-      fetch('data/ranks.json').then(r => r.json())
+      track(fetch('data/jobs.json').then(r => r.json())),
+      track(fetch('data/enemies.json').then(r => r.json())),
+      track(fetch('data/store.json').then(r => r.json())),
+      track(fetch('data/properties.json').then(r => r.json())),
+      track(fetch('data/ranks.json').then(r => r.json())),
     ]);
 
     JOBS        = jobs;
@@ -85,7 +91,6 @@ async function loadGameData() {
 
   } catch (err) {
     console.error('Failed to load game data:', err);
-    // TODO: show a user-facing error message
   }
 }
 
@@ -94,31 +99,49 @@ async function loadGameData() {
 // ─────────────────────────────────────────────
 
 async function init() {
-  // Load all JSON data first — everything depends on this
-  await loadGameData();
+  if (typeof JestSDK !== 'undefined') {
+    await JestSDK.init();
+    JestSDK.setLoadingProgress(0);
+    G.playerId = JestSDK.getPlayer().playerId;
+  }
 
-  // Load saved player state if available
+  await loadGameData(); // progress: 0 → 80%
+
   const saved = await GameState.load();
   if (saved) {
     GameState.apply(saved);
     applyOfflineEnergyRegen();
     log('⚡ Welcome back. Your empire awaits.', 'info');
   } else {
+    G.lastSeen = Date.now();
+    G.lastEnergyTick = Date.now();
     log('⚡ Energy refills every 60 seconds. Stack your bread.', 'info');
   }
 
-  // Render all tabs
+  // Init crew — checks entry payload for invite, fetches member count
+  await Crew.init();
+
+  // Init payments — fetches product list, recovers any incomplete purchases
+  await Payments.init();
+
+  // Schedule re-engagement (resets timer each session) + income reminder if player has spots
+  Notify.reEngage();
+  Notify.incomeReady();
+
+  if (typeof JestSDK !== 'undefined') JestSDK.setLoadingProgress(90);
+
   renderJobs();
   renderEnemies();
   renderStore();
   renderProps();
   updateHUD();
 
-  // Start energy regen tick — checks every 10 seconds, only regens on full interval
-  setInterval(tickEnergyRegen, 10000);
+  if (typeof JestSDK !== 'undefined') JestSDK.setLoadingProgress(100); // dismisses loading overlay
 
-  // Track last seen for offline regen on next load
-  setInterval(() => localStorage.setItem('opps_lastSeen', Date.now()), 5000);
+  // Energy regen tick — checks every 10s, grants 1 energy per full 60s interval
+  setInterval(tickEnergyRegen, 10000);
+  // Keep lastSeen current in memory so offline regen is accurate on next load
+  setInterval(() => { G.lastSeen = Date.now(); }, 5000);
 }
 
 init();

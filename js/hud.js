@@ -31,4 +31,5 @@ function updateHUD() {
   $('health-label').textContent = G.health + ' / ' + G.maxHealth;
 
   $('collect-income').textContent = '$' + collectIncome();
+  $('h-gems').textContent = '💎 ' + (G.gems || 0);
 }
