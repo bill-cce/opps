@@ -74,24 +74,27 @@ const PLUGS_DATA = [
 const _plugState = {};
 
 function renderPlugs() {
-  const container = $('plugs-grid');
+  var container = $('plugs-grid');
   if (!container) return;
   container.innerHTML = '';
-  PLUGS_DATA.forEach((plug, idx) => {
-    const card = document.createElement('div');
+  PLUGS_DATA.forEach(function(plug, idx) {
+    var card = document.createElement('div');
     card.className = 'plug-card';
-    card.onclick = () => openPlug(idx);
-    card.innerHTML = `
-      <div class="plug-portrait">
-        <img src="${plug.portrait}" alt="${plug.name}" loading="lazy">
-      </div>
-      <div class="plug-info">
-        <div class="plug-name">${plug.name}</div>
-        <div class="plug-moniker">${plug.moniker}</div>
-        <div class="plug-line">${plug.line}</div>
-      </div>
-      <div class="plug-caret">›</div>
-    `;
+    card.onclick = function() { openPlug(idx); };
+    card.innerHTML =
+      '<div class="plug-portrait-img">' +
+        '<img src="' + plug.portrait + '" alt="' + plug.name + '" loading="lazy">' +
+      '</div>' +
+      '<div class="plug-info">' +
+        '<div>' +
+          '<div class="plug-name">' + plug.name + '</div>' +
+          '<div class="plug-moniker">' + plug.moniker + '</div>' +
+          '<div class="plug-line">' + plug.line + '</div>' +
+        '</div>' +
+        '<div class="plug-action">' +
+          '<button class="plug-go-btn">LETS GO</button>' +
+        '</div>' +
+      '</div>';
     container.appendChild(card);
   });
 }

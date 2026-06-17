@@ -127,7 +127,7 @@ const GameMap = (() => {
       return s;
     };
 
-    let out = `<svg viewBox="0 0 ${W} ${H}" xmlns="${ns}" width="100%" height="100%" style="display:block;touch-action:none;">`;
+    let out = `<svg viewBox="0 0 ${W} ${H}" xmlns="${ns}" width="${W}" height="${H}" style="display:block;touch-action:none;">`;
 
     // Background
     out += el('rect', { x: 0, y: 0, width: W, height: H, fill: C.road });
@@ -218,21 +218,23 @@ const GameMap = (() => {
       const minS = _minS();
       const W = c ? c.clientWidth : 360;
       const H = c ? c.clientHeight : 600;
-      _mv = { s: minS, tx: (W - 1100 * minS) / 2, ty: (H - 1980 * minS) / 2 };
+      _mv = { s: minS, tx: (W - 1240 * minS) / 2, ty: (H - 2300 * minS) / 2 };
     }
     return _mv;
   }
 
   function _minS() {
-    return _el ? Math.max(_el.clientWidth / 1100, _el.clientHeight / 1980) : 0.31;
+    return _el ? Math.min(_el.clientWidth / 1240, _el.clientHeight / 2300) : 0.31;
   }
 
   function apply() {
     if (!_xf || !_el) return;
     const v = view();
-    const W = _el.clientWidth, H = _el.clientHeight;
-    v.tx = Math.min(0, Math.max(W - 1100 * v.s, v.tx));
-    v.ty = Math.min(0, Math.max(H - 1980 * v.s, v.ty));
+    const cW = _el.clientWidth, cH = _el.clientHeight;
+    const mW = 1240 * v.s, mH = 2300 * v.s;
+    // Center if map fits container; clamp to edges if it overflows
+    v.tx = mW <= cW ? (cW - mW) / 2 : Math.min(0, Math.max(cW - mW, v.tx));
+    v.ty = mH <= cH ? (cH - mH) / 2 : Math.min(0, Math.max(cH - mH, v.ty));
     _xf.style.transform = `translate(${v.tx}px,${v.ty}px) scale(${v.s})`;
     if (_chip) _chip.textContent = v.s.toFixed(1) + '×';
   }
@@ -334,7 +336,7 @@ const GameMap = (() => {
   function reset() {
     const c = _el, s = _minS();
     const W = c ? c.clientWidth : 360, H = c ? c.clientHeight : 600;
-    _mv = { s, tx: (W - 1100 * s) / 2, ty: (H - 1980 * s) / 2 };
+    _mv = { s, tx: (W - 1240 * s) / 2, ty: (H - 2300 * s) / 2 };
     apply();
   }
   function centerBase() {

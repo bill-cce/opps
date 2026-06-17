@@ -13,6 +13,7 @@ function showTab(name) {
   if (name === 'crew')   renderCrew();
   if (name === 'map')    GameMap.init();
   if (name === 'plugs')  renderPlugs();
+  closeNav();
 }
 
 function log(msg, cls = '') {
@@ -42,4 +43,17 @@ function showLevelUp() {
   banner.classList.add('show');
   log('RANKED UP to "' + rank + '" (Rank ' + G.level + ')!', 'gold');
   setTimeout(() => { banner.classList.remove('show'); }, 3000);
+}
+
+// ── NAV DRAWER ─────────────────────────────────
+function openNav() {
+  document.querySelector('nav').classList.add('open');
+  document.getElementById('nav-overlay').classList.add('open');
+}
+function closeNav() {
+  document.querySelector('nav').classList.remove('open');
+  document.getElementById('nav-overlay').classList.remove('open');
+}
+function toggleNav() {
+  document.querySelector('nav').classList.contains('open') ? closeNav() : openNav();
 }
