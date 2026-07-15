@@ -63,7 +63,7 @@ Clout ──▶ Level-up ──▶ +5 skill points (pools & base stats), full St
 4. Results (win/loss, Cash gained/lost, Clout gained) shown to attacker; defender is notified asynchronously.
 
 ### Target Search — scan flow & intel (U1)
-- **One target at a time.** Search snaps the player to a single eligible target (win-rate band) — not a browsable list.
+- **Clash of Clans–style search.** Tap Search and you're snapped to a single eligible raidable target (win-rate band) — not a browsable list, no active matchmaking queue. (The *feeling* of being good — hitting bots you think are players at a high win rate — is the Clash Royale influence; see the PvE/PvP blend below.)
 - **Searching costs no Stamina.** The first search is free; each **reroll costs a nominal Cash fee** (a small Cash sink — amount is data). Stamina is spent only on the actual attack.
 - **Intel shown on the target card:**
   - **Win rate** — the computed `P(win)` for this specific matchup.
@@ -98,8 +98,8 @@ Clout ──▶ Level-up ──▶ +5 skill points (pools & base stats), full St
 - Within the eligible band, selection is **progression-weighted**: early game biases toward the easy (70%) end so wins come readily and the game feels good; the weighting flattens/centers as the player levels up, so late game trends toward true skill-based fights. **The combat formula never changes — only the selection weighting does.**
 - No heat, no cooldowns, no recency weighting, no revenge mechanics, no new-player shields.
 
-#### PvE/PvP blend — the Clash Royale model
-The map is presented as pure PvP, but the target pool is secretly a **mix of real players and bots**, both drawn from the same win-rate band and **indistinguishable** (same intel, rewards, and UI; bots carry real stats and a real Cash balance — see Data Designs).
+#### PvE/PvP blend — the Clash Royale feel
+The **Clash Royale** influence is the *feeling of being good early*: you hit bots you believe are real players, at a high win rate, and it feels great. (The **search/target flow itself** is the **Clash of Clans** model — tap to get matched to a raidable target — see Target Search.) The map is presented as pure PvP, but the target pool is secretly a **mix of real players and bots**, both drawn from the same win-rate band and **indistinguishable** (same intel, rewards, and UI; bots carry real stats and a real Cash balance — see Data Designs).
 - **Bots are NOT pinned to a fixed win rate.** Forcing every bot to, say, 65% would make PvE targets obvious. Instead, bots carry varied, realistic stats and simply populate the band like players; each bot's win rate lands wherever its Defense sits relative to the attacker's Attack.
 - **Early game feels good because matchmaking serves easier targets** (the progression-weighted selection above) — and the easy end of a new player's band is disproportionately bots. As the player levels, both the weighting and the pool composition shift toward harder, increasingly real-PvP fights.
 - **Empty-band fallback:** if no eligible real players exist in the band, the scan serves a bot.
@@ -123,7 +123,7 @@ The map is presented as pure PvP, but the target pool is secretly a **mix of rea
 4. Loot: winner takes **10% of loser's Cash on hand**.
 5. Combat is a **single instant stat-comparison** — attacker's Attack vs defender's Defense via the ratio formula `P(win)=A^k/(A^k+D^k)`; **no Health, no rounds, no attrition**. Stamina is the sole fight-pacing resource.
 6. Matchmaking is a **win-rate band**: eligible targets are those the attacker beats **35–70%** of the time (inverts to a Defense-range query from the attacker's Attack). Selection within the band is **progression-weighted** — easier targets early, flattening as the player levels.
-7. Target pool is a **hidden PvE/PvP blend (Clash Royale model)**. Bots are **indistinguishable** from real targets — real, varied stats and a real Cash balance, **NOT pinned to a fixed win rate** — and populate the same band as players. The feel-good early game comes from matchmaking serving easier targets, not from fixing bot difficulty. Bots also cover the empty-band fallback.
+7. Target pool is a **hidden PvE/PvP blend**. **Search flow = Clash of Clans** (tap → matched to a raidable target); **the feel-good early game = Clash Royale** (beating bots you think are players). Bots are **indistinguishable** from real targets — real, varied stats and a real Cash balance, **NOT pinned to a fixed win rate** — and populate the same band as players. The feel-good early game comes from matchmaking serving easier targets, not from fixing bot difficulty. Bots also cover the empty-band fallback.
 8. Bots are a **preloaded list of persistent entities** (stats + Cash) in the same matchmaking pool as players — not instanced per scan.
 9. Loser's Cash is debited **at combat resolution** — 10% of their *current* balance, never pre-reserved — keeping multi-attacker farming self-limiting.
 10. No heat, no revenge mechanics, no new-player shields.

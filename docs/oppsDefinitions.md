@@ -25,7 +25,7 @@ These terms are locked. Legacy prototype/code terms in the right column must be 
 | Combat targets (PvP + PvE) | **Opps** | unchanged | `enemies` / "OPPS LIST" |
 | PvE economy actions | **Moves** | non-combat gameplay | `jobs` / "MOVES" |
 | Gear dealers + quest givers | **Plugs** | NPC *people*: buy gear from them **and** get quests. The "shop" and the "contacts" are the same feature. | `store` **+** `plugs.js` (merge) / "THE PLUG" + "PLUGS" |
-| Invited-friends system | **Crew** | raises your gear-equip capacity | `crew` / "CREW" |
+| Invited-friends system | **Crew** | invites raise your gear-equip capacity | `crew` / "CREW" |
 | Invited real players who played | **Lieutenants** | the actual Crew members | "SOLDIERS" |
 | Passive-income properties | **Spots** | own/operate → Cash; collect on login; **offline cap gated by level** | `properties` / "SPOTS" |
 | 3D world map + fight entry | **The Hood** | look around; holds the **Search** button | `map.js`/`map3d.js` (today "THE HOOD" tab = status hub) |
@@ -80,9 +80,10 @@ These terms are locked. Legacy prototype/code terms in the right column must be 
 
 ---
 
-## Monetization (notes — not v1 scope yet)
-- **Hard currency:** none in v1. The prototype's `gems`/IAP is removed for now, but **we should implement a hard currency at some point** — keep the `GameState`/payments seam intact so it can be re-added cleanly.
-- **Premium gear:** a candidate path — powerful gear that is **resource-constrained or limited-supply** (time-limited drops, capped quantities, or premium-currency-gated) rather than freely buyable. Design TBD.
+## Monetization
+- **v1 model — sell Stamina and Moves refreshes.** Players pay to refill their **Stamina** (fights) and **Moves** (PvE) pools instead of waiting for regen. This is the primary launch monetization — deliberately **not** a 4X-style build-timer model.
+- **Premium gear:** a secondary path — powerful gear that is **resource-constrained or limited-supply** (time-limited drops, capped quantities). May include pay-to-win / limited-time elements. Design TBD.
+- **Hard currency:** none in v1 — refreshes and gear are purchased directly. We should still add a hard currency later; keep the `GameState`/payments seam intact so it can be re-added cleanly.
 
 ---
 
@@ -94,7 +95,7 @@ These terms are locked. Legacy prototype/code terms in the right column must be 
 3. **Crew** size (number of **Lieutenants** — invited players who actually played) unlocks combat gear slots: **+1 slot per 5 Lieutenants, gear type rotating**; growth kept deliberately slow.
 4. **Gear loadout is player-chosen**, configured on the **Player Profile**: one primary item per type shown prominently, Crew-unlocked secondary slots stacked behind it (+1/+2/+3), tap to configure.
 5. **The Hood** is the 3D world map and holds the Search button; **Player Profile** is the public, equip-enabled inventory screen.
-6. **No hard currency in v1** — deferred to a later monetization pass (see Monetization above). *(Health removal is a combat decision — see the Combat doc.)*
+6. **Monetization sells Stamina and Moves refreshes** in v1 (plus premium/limited-supply gear); **no hard currency in v1** (purchases are direct), added later. *(Health removal is a combat decision — see the Combat doc.)*
 
 ---
 
@@ -129,4 +130,4 @@ Where each canonical term lands in the current prototype. Paths relative to repo
 
 **Player Profile** (from "STATS") — `js/stats.js`/`tab-stats` becomes the Player Profile: add equip/loadout UI and a public, other-player-viewable projection.
 
-**Hard currency (remove for now)** — `js/payments.js` (GEM_PACKS/GEM_SPENDS/Payments), `state.js` `gems`, `hud.js` `h-gems`, `index.html` GEMS stat + `gem-section`, `store.js` `renderGemSection()`. Remove/disable for v1 but keep the `GameState`/payments seam for later re-add.
+**Payments** — remove the `gems`/hard-currency IAP: `js/payments.js` (GEM_PACKS/GEM_SPENDS/Payments), `state.js` `gems`, `hud.js` `h-gems`, `index.html` GEMS stat + `gem-section`, `store.js` `renderGemSection()`. **Keep the `GameState`/payments seam** — v1 monetization sells **Stamina/Moves refreshes** through it (plus premium gear).
