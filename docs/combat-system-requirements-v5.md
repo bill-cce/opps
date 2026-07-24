@@ -96,7 +96,7 @@ Clout ──▶ Level-up ──▶ +5 skill points, full Stamina/Moves/Health re
 - **The Hospital.** Being defeated sends you to the **Hospital**: your Health is depleted, you **cannot fight**, and you are **shielded from incoming attacks** while hospitalized. That shield doubles as the **offline-farming cap** — a swarm can only beat you down to hospitalized, after which you're protected. You leave by healing: **passive regen over time**, or pay **Cash / premium to heal faster** and get back in the fight (a monetization hook). Exact heal cost/time is tuning.
 - **Cash settlement at resolution (S2):** the loser's Cash is debited **when the fight resolves** — 10% of their *current* balance, never pre-reserved. Keeps multi-attacker farming self-limiting; atomic, server-authoritative, serialized across concurrent attackers.
 
-### Combat Math (proposed — confirm with eng)
+### Combat Math (proposed — confirm with eng) *(owner: Jake)*
 *Proposed model; the **shapes** are the proposal, the **constants** are tuning data.*
 
 **Per-hit damage** — a ratio/mitigation model (smooth, never zero, so fights always terminate):
@@ -169,7 +169,7 @@ The **Clash Royale** influence is the *feeling of being good early*: you hit bot
 1. Moves structure: tiers, Moves costs, payouts, item drop tables? *(owner: Jake)*
 2. **Snapshot capture trigger & staleness rules** — when a defender's snapshot (Attack/Defense/Health/loadout) is written/refreshed and how stale it may get. *(owner: Bill)*
 3. **Combat tuning** *(data)*: constants for the proposed combat math (`s` spread ≈0.15, `β` band-width ≈2, `b` first-strike ≈0.1), the damage scale, Health values, **run-away success rate**, and hospital **heal cost / heal time**.
-4. **Confirm the combat math + matchmaking approach** (proposed in Combat Math / Matchmaking): validate the ratio damage model and closed-form `P(win)`, and that `CP = A×(H+D)` is a good enough shortlist proxy (+ pick the shortlist width). *(Needs eng review — the previously-unowned Tier-1 blocker.)*
+4. **Confirm the combat math + matchmaking approach** (proposed in Combat Math / Matchmaking): validate the ratio damage model and closed-form `P(win)`, and that `CP = A×(H+D)` is a good enough shortlist proxy (+ pick the shortlist width). *(owner: Jake)*
 5. Crew/Lieutenant slot rotation order (weapon/armor/vehicle/…), long-tail curve, and hard cap vs. diminishing returns.
 6. Clout curve *(data)*: base value (ratio r ≈ 1.05 chosen) and per-source Clout yields (win/loss/Move/recruit).
 7. Do bot Cash balances replenish/reset after being farmed down, and can bots appear as *attackers* (defense-side feed), or defenders only? *(data + design)*
