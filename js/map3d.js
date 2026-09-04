@@ -327,7 +327,7 @@ var Map3D = (function () {
       clampAll();
     }
     var ptrs = new Map();
-    var lastPinch = 0;
+    var lastPinch = 0, lastAngle = 0, lastCenter = null;
     function on3D(t, fn, opts) {
       domEl.addEventListener(t, fn, opts);
       _detach.push(function () { domEl.removeEventListener(t, fn, opts); });
@@ -335,8 +335,10 @@ var Map3D = (function () {
     on3D('contextmenu', function (e) { e.preventDefault(); });
     on3D('pointerdown', function (e) {
       try { domEl.setPointerCapture(e.pointerId); } catch (_) {}
-      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, b: e.button });
+      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, b: e.button, type: e.pointerType });
       domEl.style.cursor = 'grabbing';
+      // reset two-finger state on finger count change
+      lastPinch = 0; lastCenter = null;
     });
     on3D('pointermove', function (e) {
       var p = ptrs.get(e.pointerId);
@@ -344,18 +346,43 @@ var Map3D = (function () {
       var dx = e.clientX - p.x, dy = e.clientY - p.y;
       p.x = e.clientX; p.y = e.clientY;
       if (ptrs.size === 1) {
-        if (p.b === 2) { pan(dx, dy); }
-        else { theta -= dx * 0.0052; phi -= dy * 0.0042; clampAll(); }
+        if (p.b === 2) {
+          // right-click drag → pan
+          pan(dx, dy);
+        } else if (p.type === 'touch') {
+          // single-finger swipe → pan
+          pan(dx, dy);
+        } else {
+          // mouse left-drag → orbit/rotate
+          theta -= dx * 0.0052; phi -= dy * 0.0042; clampAll();
+        }
       } else if (ptrs.size === 2) {
         var vals = [];
         ptrs.forEach(function (v) { vals.push(v); });
-        var d2 = Math.hypot(vals[0].x - vals[1].x, vals[0].y - vals[1].y);
-        if (lastPinch) dist *= lastPinch / d2;
-        lastPinch = d2; clampAll();
-        pan(dx / 2, dy / 2);
+        var d2    = Math.hypot(vals[0].x - vals[1].x, vals[0].y - vals[1].y);
+        var ang2  = Math.atan2(vals[1].y - vals[0].y, vals[1].x - vals[0].x);
+        var cx2   = (vals[0].x + vals[1].x) / 2;
+        var cy2   = (vals[0].y + vals[1].y) / 2;
+        if (lastPinch) {
+          // pinch → zoom
+          dist *= lastPinch / d2;
+          // two-finger twist → rotate
+          var dA = ang2 - lastAngle;
+          if (dA >  Math.PI) dA -= Math.PI * 2;
+          if (dA < -Math.PI) dA += Math.PI * 2;
+          theta -= dA;
+        }
+        // center movement → pan
+        if (lastCenter) pan(cx2 - lastCenter.x, cy2 - lastCenter.y);
+        lastPinch = d2; lastAngle = ang2; lastCenter = { x: cx2, y: cy2 };
+        clampAll();
       }
     });
-    function endPtr(e) { ptrs.delete(e.pointerId); lastPinch = 0; if (!ptrs.size) domEl.style.cursor = 'grab'; }
+    function endPtr(e) {
+      ptrs.delete(e.pointerId);
+      lastPinch = 0; lastCenter = null;
+      if (!ptrs.size) domEl.style.cursor = 'grab';
+    }
     on3D('pointerup', endPtr);
     on3D('pointercancel', endPtr);
     on3D('wheel', function (e) { e.preventDefault(); dist *= Math.exp(e.deltaY * 0.0011); clampAll(); }, { passive: false });
